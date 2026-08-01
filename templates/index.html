@@ -2,14 +2,23 @@
 <html>
 
 <head>
-  <title>Etusivu</title>
+  <title>Cinematography Reviewer</title>
 </head>
 
 <body>
-  <h1>Etusivu</h1>
+  <h1>Cinematography Reviewer</h1>
+  {% if session.username %}
   <p>
-    <b>Tervetuloa</b> <i>sovellukseen</i>!
+    Hello {{ session.username }}
   </p>
+  {% endif %}
+  <p>
+    <b>Welcome to</b> <i>cinematography reviewer</i>:
+  </p>
+  <a href="/login"> Login </a>
+  <br>
+  <a href="/register"> Sign up </a>
 </body>
+
 
 </html>
