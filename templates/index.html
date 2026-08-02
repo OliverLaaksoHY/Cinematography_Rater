@@ -24,13 +24,17 @@
   <a href="/register"> Sign up </a>
   {% else %}
   <p>
-    Hello {{ session.username }}  You have an id of {{ session.user_id }}
-    <br>
     <a href="/add_cinema"> Upload Cinema </a>
     <br>
     <a href="/logout"> Logout </a>
   </p>
   {% endif %}
+  <h2>Cinemas</h2>
+  <ul>
+    {% for item in items %}
+    <li> <a href = "/item/{{ item.id }}">{{item.title}}</a> </li>
+    {% endfor %}
+  </ul>
 </body>
 
 
