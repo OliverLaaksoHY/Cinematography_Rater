@@ -24,23 +24,24 @@ In the app:
    source venv/bin/activate
    ```
 6. Create a database
-   a) Create database
-   ```sh
-   touch database.db
-   ```
-   b) Open sqlite3
-   ```python
-   sqlite3
-   ```
-   c) Open database file in sqlite3
-   ```python
-   .open database.db
-   ```
-   d) Add the required database tables by copying the contents of the file schema.sql into the terminal that is running sqlite3 
-   e) Quit sqlite3
+
+      a) Create database
+      ```sh
+      touch database.db
+      ```
+      b) Open sqlite3
       ```python
-   .quit
-   ```
+      sqlite3
+      ```
+      c) Open database file in sqlite3
+      ```python
+      .open database.db
+      ```
+      d) Add the required database tables by copying the contents of the file schema.sql into the terminal that is running sqlite3 
+      e) Quit sqlite3
+         ```python
+      .quit
+      ```
 8. Start the Flask application: 
    ```python
    flask run
