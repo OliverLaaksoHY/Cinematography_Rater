@@ -4,6 +4,7 @@ from flask import redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import db
 import config
+import items
 app = Flask(__name__)
 app.secret_key = config.secret_key
 @app.route("/")
@@ -18,6 +19,26 @@ def index():
 def register():
     return render_template("register.html")
 
+@app.route("/add_cinema")
+def add_item():
+    return render_template("add_cinema.html")
+
+@app.route("/create_item", methods=["POST"])
+def create_item():
+    title = request.form["title"]
+    description = request.form["description"]
+    focal_length = request.form["focal_length"]
+    location = request.form["location"]
+    user_id = session["user_id"]
+ 
+    try:
+        items.add_item(title, description, focal_length, location, user_id)
+    except sqlite3.IntegrityError:
+        return "Already exists"
+
+    return redirect("/")
+
+   
 @app.route("/create", methods=["POST"])
 def create():
     username = request.form["username"]
@@ -43,10 +64,14 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
         
-        sql = "SELECT password_hash FROM users WHERE username = ?"
-        password_hash = db.query(sql, [username])[0][0]
+        sql = "SELECT id, password_hash FROM users WHERE username = ?"
+        
+        result = db.query(sql, [username])[0]
+        password_hash = result["password_hash"]
+        user_id = result["id"]
 
         if check_password_hash(password_hash, password):
+            session["user_id"] = user_id
             session["username"] = username
             return redirect("/")
         else:
