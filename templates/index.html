@@ -9,15 +9,28 @@
   <h1>Cinematography Reviewer</h1>
   {% if session.username %}
   <p>
-    Hello {{ session.username }}
+    Hello {{ session.username }}  You have an id of {{ session.user_id }}
   </p>
   {% endif %}
+
+
   <p>
     <b>Welcome to</b> <i>cinematography reviewer</i>:
   </p>
+  
+  {% if not session.username %}
   <a href="/login"> Login </a>
   <br>
   <a href="/register"> Sign up </a>
+  {% else %}
+  <p>
+    Hello {{ session.username }}  You have an id of {{ session.user_id }}
+    <br>
+    <a href="/add_cinema"> Upload Cinema </a>
+    <br>
+    <a href="/logout"> Logout </a>
+  </p>
+  {% endif %}
 </body>
 
 
