@@ -23,8 +23,26 @@ In the app:
    ```python
    source venv/bin/activate
    ```
-7. Start the Flask application: 
+6. Create a database
+   a) Create database
+   ```sh
+   touch database.db
+   ```
+   b) Open sqlite3
+   ```python
+   sqlite3
+   ```
+   c) Open database file in sqlite3
+   ```python
+   .open database.db
+   ```
+   d) Add the required database tables by copying the contents of the file schema.sql into the terminal that is running sqlite3 
+   e) Quit sqlite3
+      ```python
+   .quit
+   ```
+8. Start the Flask application: 
    ```python
    flask run
    ```
-8. Open address shown in the terminal in a web browser such as Chrome or Firefox 
+9. Open address shown in the terminal in a web browser such as Chrome or Firefox 
