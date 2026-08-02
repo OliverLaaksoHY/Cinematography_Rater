@@ -8,6 +8,16 @@ def add_item(title, description, focal_length, location, user_id):
         """
     db.execute(sql, [title, description, focal_length, location, user_id])
 
+def update_item(item_id, title, description, focal_length, location, user_id):
+    sql = """
+        UPDATE items 
+        SET
+        title=?, description=?, focal_length=?, geolocation=?, user_id=? 
+        WHERE id = ?
+        """
+    db.execute(sql, [title, description, focal_length, location, user_id, item_id])
+
+
 def get_items():
     sql = """
         SELECT id, title FROM items ORDER BY id DESC
@@ -17,7 +27,7 @@ def get_items():
 
 def get_item(item_id):
     sql = """
-        SELECT I.title, I.description, I.focal_length, I.geolocation, U.username, user_id 
+        SELECT I.id item_id, I.title, I.description, I.focal_length, I.geolocation, U.username, I.user_id 
         FROM items I, users U 
         WHERE I.user_id = U.id
         AND U.id = ?"""
