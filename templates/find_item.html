@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Find Post</title>
+</head>
+
+<body>
+  <h1>Find Post</h1>
+  <form action="/find_item" method="get">
+    <p>
+      Search word: <input type="text" name = "query" value = "{{query}}"/>
+    </p>
+    <br>
+    <input type = "submit" value ="Send"/>
+    {% if query %}
+    <h2> Tulokset </h2>
+    <ul>
+      {% for item in results%}
+      <li><a href= "/item/{{item.id}}"> {{item.title}}</a> </li>
+      {% endfor %}
+    </ul>
+
+    {% endif %}
+    <p> 
+        <a href = "/"> Back </a>
+    </p>
+
+</body>
+
+
+</html>

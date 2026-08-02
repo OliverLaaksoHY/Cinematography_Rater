@@ -22,6 +22,7 @@
   <a href="/login"> Login </a>
   <br>
   <a href="/register"> Sign up </a>
+  <br>
   {% else %}
   <p>
     <a href="/add_cinema"> Upload Cinema </a>
@@ -29,6 +30,7 @@
     <a href="/logout"> Logout </a>
   </p>
   {% endif %}
+  <a href="/find_item"> Find post </a>
   <h2>Cinemas</h2>
   <ul>
     {% for item in items %}

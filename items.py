@@ -28,12 +28,21 @@ def get_items():
     """
     return db.query(sql)
 
+def search_item(query):
+    sql = """
+    SELECT id, title
+    FROM items
+    WHERE description LIKE ?
+    OR title LIKE ?
+    ORDER BY id DESC
+    """
+    like = "%"+query+"%"
+    return db.query(sql, [like, like])
 
 def get_item(item_id):
     sql = """
         SELECT I.id item_id, I.title, I.description, I.focal_length, I.geolocation, U.username, I.user_id 
         FROM items I, users U 
         WHERE I.user_id = U.id
-        AND U.id = ?"""
-    result = db.query(sql, [item_id])[0]
-    return result
+        AND I.id = ?"""
+    return db.query(sql, [item_id])[0]
