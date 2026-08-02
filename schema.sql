@@ -1,0 +1,13 @@
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    username TEXT UNIQUE,
+    password_hash TEXT
+);
+CREATE TABLE items (
+    id INTEGER PRIMARY KEY,
+    title TEXT UNIQUE,
+    description TEXT,
+    focal_length INTEGER,
+    geolocation TEXT,
+    user_id INTEGER REFERENCES users
+);
