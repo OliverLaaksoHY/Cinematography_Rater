@@ -17,7 +17,11 @@ def update_item(item_id, title, description, focal_length, location, user_id):
         """
     db.execute(sql, [title, description, focal_length, location, user_id, item_id])
 
-
+def remove_item(item_id):
+    sql = """
+    DELETE FROM items WHERE id = ?    
+    """
+    db.execute(sql, [item_id])
 def get_items():
     sql = """
         SELECT id, title FROM items ORDER BY id DESC
