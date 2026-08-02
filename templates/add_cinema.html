@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Upload Cinema</title>
+</head>
+
+<body>
+  <h1>Upload Cinema</h1>
+  <form action="/create_item" method="post">
+    <p>
+      Title: <br />
+      <input type="text" name = "title" />
+    </p>
+    <p>
+      Description <br/>
+      <textarea name = "description" rows = "8" cols =60></textarea>
+    </p>
+    
+    <p>
+      Lens focal length<br/>
+      <input type="number" name = "focal_length"/>
+    </p>
+    <p>
+      Location <br/>
+      <input type="text" name = "location"/>
+    </p>
+    <input type = "submit" value ="Upload item"/>
+
+  </form>
+</body>
+
+
+</html>
+
