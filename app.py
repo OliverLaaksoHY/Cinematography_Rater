@@ -9,11 +9,14 @@ app = Flask(__name__)
 app.secret_key = config.secret_key
 @app.route("/")
 def index():
-    words = ["apina", "banaani", "cembalo"]
-    return render_template("index.html", message="Tervetuloa!", items=words)
+    all_items = items.get_items()
+    return render_template("index.html", message="Tervetuloa!", items=all_items)
 
 
-
+@app.route("/item/<int:item_id>")
+def show_item(item_id):
+    item = items.get_item(item_id)
+    return render_template("show_item.html", item=item)
 
 @app.route("/register")
 def register():
