@@ -26,10 +26,15 @@ In the app:
 6. Create a database
 
       a) Create database using the command `touch database.db` in the linux cli shell
+   
       b) Open sqlite3 using `sqlite3` in the terminal
+
       c) Open database file in sqlite3 using `.open database.db`
+
       d) Create the database tables. Copy the contents of the file `schema.sql` and paste them into the SQLite CLI.
+
       e) Confirm the tables have been created using `.tables`
+
       f) Exit sqlite3 using `.quit` in the terminal 
       
 8. Start the Flask application: 
