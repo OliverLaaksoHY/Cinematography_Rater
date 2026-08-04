@@ -19,11 +19,19 @@ In the app:
    ```python
    cd Cinematography_Rater
    ```
-5. Activate the virtual environment:
-   ```python
-   source venv/bin/activate
+4. Create virtual environment
+```
+python -m venv venv
+```
+And activate it:  
+```
+source venv/bin/activate
+```
+6. Install flask:
    ```
-6. Create a database
+   pip install flask
+   ```
+7. Create a database
 
       a) Create database using the command `touch database.db` in the linux cli shell
    
