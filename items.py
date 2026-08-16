@@ -45,4 +45,5 @@ def get_item(item_id):
         FROM items I, users U 
         WHERE I.user_id = U.id
         AND I.id = ?"""
-    return db.query(sql, [item_id])[0]
+    result = db.query(sql, [item_id])
+    return result[0] if result else None

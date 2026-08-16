@@ -24,24 +24,36 @@ def find_item():
     return render_template("find_item.html", query=query, results=results)
 
 
+def try_fetch_item(item_id: int):
+    item = items.get_item(item_id)
+    if not item:
+        abort(404)
+    return item
+
+def try_fetch_item_with_rights(item_id: int):
+    item = items.get_item(item_id)
+    if not item:
+        abort(404)
+    
+    if not session.get("user_id") or item["user_id"] != session["user_id"]:
+        abort(403)
+    return item
+
+
 @app.route("/item/<int:item_id>")
 def show_item(item_id):
-    item = items.get_item(item_id)
+    item = try_fetch_item(item_id)
     return render_template("show_item.html", item=item)
 
 @app.route("/edit_item/<int:item_id>")
 def edit_item(item_id):
-    item = items.get_item(item_id)
-    if item["user_id"] != session["user_id"]:
-        abort(403)
+    item = try_fetch_item_with_rights(item_id)
     return render_template("edit_item.html", item=item)
 
 @app.route("/update_item", methods=["POST"])
 def update_item():
     item_id = request.form["item_id"]
-    item = items.get_item(item_id)
-    if item["user_id"] != session["user_id"]:
-        abort(403)
+    item = try_fetch_item_with_rights(item_id)
 
     title = request.form["title"]
     description = request.form["description"]
@@ -57,11 +69,9 @@ def update_item():
 
 @app.route("/remove_item/<int:item_id>", methods = ["GET", "POST"])
 def remove_item(item_id):
-    if item["user_id"] != session["user_id"]:
-        abort(403)
+    item = try_fetch_item_with_rights(item_id)
     
     if request.method == "GET":
-        item = items.get_item(item_id)
         return render_template("remove_item.html", item=item)
     if request.method == "POST":
         if "remove" in request.form:
@@ -134,5 +144,5 @@ def login():
 
 @app.route("/logout")
 def logout():
-    del session["username"]
+    session.clear()
     return redirect("/")
