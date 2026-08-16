@@ -35,15 +35,9 @@ source venv/bin/activate
 
       a) Create database using the command `touch database.db` in the linux cli shell
    
-      b) Open sqlite3 using `sqlite3` in the terminal
-
-      c) Open database file in sqlite3 using `.open database.db`
-
-      d) Create the database tables. Copy the contents of the file `schema.sql` and paste them into the SQLite CLI.
-
-      e) Confirm the tables have been created using `.tables`
-
-      f) Exit sqlite3 using `.quit` in the terminal 
+      b) Fill the database using the command
+      ``` sqlite3 database.db < schema.sql ```
+      in the linux cli shell.
       
 8. Start the Flask application: 
    ```python
