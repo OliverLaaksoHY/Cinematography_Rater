@@ -17,28 +17,18 @@
       <textarea name = "description" rows = "8" cols =60 maxlength="500" required></textarea>
     </p>
     
+    {% for class in classes %}
     <p>
-      Framing: </br>
-      <select name = "framing">
-        <option value = "close-up"> close-up </option>
-        <option value = "medium-shot"> medium shot </option>
-        <option value = "wide-shot"> wide shot</option>
-        <option value = "birds-eye"> birds-eye</option>
-        <option value = "ants-eye"> ants-eye</option>
+      {{class}}: </br>
+      <select name ="classes">
+        <option value="">(select)</option>
+      {% for option in classes[class] %}
+        <option value="{{class}}:{{option}}">{{option}} </option>        
+      {% endfor %}
       </select>
     </p>
-    
-    <p>
-      Composition: </br>
-      <select name = "composition">
-        <option value = "landscape"> landscape </option>
-        <option value = "portrait"> portrait </option>
-        <option value = "group shot"> group-shot</option>
-        <option value = "nature"> nature </option>
-        <option value = "architecture"> architecture</option>
-      
-      </select>
-    </p>
+    {% endfor %}
+
 
     <p>
       Lens focal length<br/>

@@ -126,7 +126,8 @@ def register():
 @app.route("/add_cinema")
 def add_item():
     require_login()
-    return render_template("add_cinema.html")
+    classes = items.get_all_classes()
+    return render_template("add_cinema.html", classes = classes)
 
 @app.route("/create_item", methods=["POST"])
 def create_item():
@@ -152,15 +153,12 @@ def create_item():
     user_id = session["user_id"]
     
     
-    framing = request.form["framing"]
+    classes = []
+    for entry in request.form.getlist("classes"):
+        if entry:
+            parts = entry.split(":")
+            classes.append((parts[0], parts[1]))
     
-    if framing:
-        classes.append(("framing", framing))
-    composition = request.form["composition"]
-
-    if composition:
-        classes.append(("composition", composition))
-
     try:
         items.add_item(title, description, focal_length, location, user_id, classes)
     except sqlite3.IntegrityError:
