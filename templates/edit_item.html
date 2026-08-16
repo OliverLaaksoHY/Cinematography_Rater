@@ -2,11 +2,11 @@
 <html>
 
 <head>
-  <title>Edit Cinema</title>
+  <title>Edit Post</title>
 </head>
 
 <body>
-  <h1>Edit Cinema</h1>
+  <h1>Edit Post</h1>
   <form action="/update_item" method="post">
     <p>
       Title: <br />
@@ -27,7 +27,7 @@
     </p>
     <input type="hidden" name="item_id" value="{{item.item_id}}">
     <input type = hidden name = "csrf_token" value = {{session.csrf_token}}>
-    <input type = "submit" value ="Upload item"/>
+    <input type = "submit" value ="Edit post"/>
 
   </form>
   <p>
