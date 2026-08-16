@@ -1,12 +1,12 @@
 import sqlite3
 from flask import Flask
-from flask import redirect, render_template, request, session
+from flask import abort, redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import db
-import config
 import items
+import secrets
 app = Flask(__name__)
-app.secret_key = config.secret_key
+app.secret_key = str(secrets.token_hex(16))
 @app.route("/")
 def index():
     all_items = items.get_items()
@@ -32,11 +32,17 @@ def show_item(item_id):
 @app.route("/edit_item/<int:item_id>")
 def edit_item(item_id):
     item = items.get_item(item_id)
+    if item["user_id"] != session["user_id"]:
+        abort(403)
     return render_template("edit_item.html", item=item)
 
 @app.route("/update_item", methods=["POST"])
 def update_item():
     item_id = request.form["item_id"]
+    item = items.get_item(item_id)
+    if item["user_id"] != session["user_id"]:
+        abort(403)
+
     title = request.form["title"]
     description = request.form["description"]
     focal_length = request.form["focal_length"]
@@ -51,6 +57,9 @@ def update_item():
 
 @app.route("/remove_item/<int:item_id>", methods = ["GET", "POST"])
 def remove_item(item_id):
+    if item["user_id"] != session["user_id"]:
+        abort(403)
+    
     if request.method == "GET":
         item = items.get_item(item_id)
         return render_template("remove_item.html", item=item)
