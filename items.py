@@ -14,7 +14,7 @@ def add_item(title, description, focal_length, location, user_id, classes):
         db.execute(sql, [item_id, title, value])
 
 
-def update_item(item_id, title, description, focal_length, location, user_id):
+def update_item(item_id, title, description, focal_length, location, user_id, classes):
     sql = """
         UPDATE items 
         SET
@@ -22,6 +22,13 @@ def update_item(item_id, title, description, focal_length, location, user_id):
         WHERE id = ?
         """
     db.execute(sql, [title, description, focal_length, location, user_id, item_id])
+    sql = "DELETE FROM item_classes WHERE item_id = ?"
+    db.execute(sql, [item_id])
+    
+    sql = "INSERT INTO item_classes (item_id, title, value) VALUES (?, ?, ?)"
+    for title, value in classes:
+        db.execute(sql, [item_id, title, value])
+
 
 def remove_item(item_id):
     sql = """

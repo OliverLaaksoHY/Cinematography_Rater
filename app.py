@@ -74,32 +74,51 @@ def show_item(item_id):
 def edit_item(item_id):
     require_login()
     item = try_fetch_item_with_rights(item_id)
-    return render_template("edit_item.html", item=item)
+    all_classes = items.get_all_classes()
+    classes = {}
+    for entry in classes:
+        classes[entry] = []
+
+    for entry in items.get_classes(item_id):
+        classes[entry["title"]] = entry["value"] 
+    return render_template("edit_item.html", item=item, classes=classes, all_classes = all_classes)
 
 @app.route("/update_item", methods=["POST"])
 def update_item():
     check_csrf()
     item_id = request.form["item_id"]
-    item = try_fetch_item_with_rights(item_id)
+    try_fetch_item_with_rights(item_id)
 
+    print("ma4")
     title = request.form["title"]
     if len(title) > 50 or not title:
         abort(403)
     
+    print("ma4")
     description = request.form["description"]
     if len(description) > 500 or not description:
         abort(403)
 
+    print("ma3")
     focal_length = request.form["focal_length"]
-    if not re.search("^[1-9][0-9]{0, 3}$", focal_length):
+    if not re.search("^[1-9][0-9]{0,3}$", focal_length):
         abort(403)
     
+    print("ma2")
     location = request.form["location"]
     if not location:
         abort(403)
     user_id = session["user_id"]
+
+    print("ma1")
+    classes = []
+    for entry in request.form.getlist("classes"):
+        if entry:
+            parts = entry.split(":")
+            classes.append((parts[0], parts[1]))
+
     try:
-        items.update_item(item_id, title, description, focal_length, location, user_id)
+        items.update_item(item_id, title, description, focal_length, location, user_id, classes)
     except sqlite3.IntegrityError:
         return "Already exists"
 

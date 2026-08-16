@@ -10,16 +10,33 @@
   <form action="/update_item" method="post">
     <p>
       Title: <br />
-      <input type="text" name = "title" value = "{{item.title}} maxlength="50" required"/>
+      <input type="text" name = "title" value = "{{item.title}}" maxlength="50" required"/>
     </p>
     <p>
       Description <br/>
-      <textarea name = "description" rows = "8" cols =60>{{item.description}} maxlength="500" required </textarea>
+      <textarea name = "description" rows = "8" cols ="60" maxlength="500" required>{{item.description}}  </textarea>
     </p>
     
+    {% for class in all_classes %}
+    <p>
+      {{class}}: </br>
+      <select name ="classes">
+        <option value="">(select)</option>
+      {% for option in all_classes[class] %}
+        {% if classes[class] == option %}
+        <option value="{{class}}:{{option}}" selected>{{option}} </option>        
+        {% else %}
+        <option value="{{class}}:{{option}}">{{option}} </option>        
+        {% endif%}
+        {% endfor %}
+      </select>
+    </p>
+    {% endfor %}
+
+
     <p>
       Lens focal length<br/>
-      <input type="number" name = "focal_length" value = "{{item.focal_length}} pattern="[1-9][0-9]{0,3}" required/>
+      <input type="number" name = "focal_length" value = "{{item.focal_length}}" pattern="[1-9][0-9]{0,3}" required/>
     </p>
     <p>
       Location <br/>
