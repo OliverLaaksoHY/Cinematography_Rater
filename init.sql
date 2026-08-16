@@ -1,7 +1,8 @@
 DELETE FROM classes;
 
 INSERT INTO classes (title, value) VALUES ('Framing', 'close-up');
-INSERT INTO classes (title, value) VALUES ('Framing', 'mediun-shot');
+INSERT INTO classes (title, value) VALUES ('Framing', 'medium-shot');
+INSERT INTO classes (title, value) VALUES ('Framing', 'wide-shot');
 INSERT INTO classes (title, value) VALUES ('Framing', 'birds-eye');
 INSERT INTO classes (title, value) VALUES ('Framing', 'ants-eye');
 
