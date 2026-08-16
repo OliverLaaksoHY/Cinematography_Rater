@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import db
 import items
 import secrets
+import re
 app = Flask(__name__)
 app.secret_key = str(secrets.token_hex(16))
 
@@ -64,9 +65,20 @@ def update_item():
     item = try_fetch_item_with_rights(item_id)
 
     title = request.form["title"]
+    if len(title) > 50 or not title:
+        abort(403)
+    
     description = request.form["description"]
+    if len(description) > 500 or not description:
+        abort(403)
+
     focal_length = request.form["focal_length"]
+    if not re.search("^[1-9][0-9]{0, 3}$", focal_length):
+        abort(403)
+    
     location = request.form["location"]
+    if not location:
+        abort(403)
     user_id = session["user_id"]
     try:
         items.update_item(item_id, title, description, focal_length, location, user_id)
@@ -101,11 +113,23 @@ def add_item():
 def create_item():
     require_login()
     title = request.form["title"]
+    if not title or len(title) > 50: 
+        abort(403)
+    
     description = request.form["description"]
+    if not description or len(description) > 500 :
+        abort(403)
+
     focal_length = request.form["focal_length"]
+    if not re.search("^[1-9][0-9]{0,3}$", focal_length):
+        abort(403)
+    
     location = request.form["location"]
+    if not location:
+        abort(403)
+    
     user_id = session["user_id"]
- 
+    
     try:
         items.add_item(title, description, focal_length, location, user_id)
     except sqlite3.IntegrityError:

@@ -10,20 +10,20 @@
   <form action="/update_item" method="post">
     <p>
       Title: <br />
-      <input type="text" name = "title" value = "{{item.title}}"/>
+      <input type="text" name = "title" value = "{{item.title}} maxlength="50" required"/>
     </p>
     <p>
       Description <br/>
-      <textarea name = "description" rows = "8" cols =60>{{item.description}}</textarea>
+      <textarea name = "description" rows = "8" cols =60>{{item.description}} maxlength="500" required </textarea>
     </p>
     
     <p>
       Lens focal length<br/>
-      <input type="number" name = "focal_length" value = "{{item.focal_length}}"/>
+      <input type="number" name = "focal_length" value = "{{item.focal_length}} pattern="[1-9][0-9]{0,3}" required/>
     </p>
     <p>
       Location <br/>
-      <input type="text" name = "location" value = "{{item.geolocation}}"/>
+      <input type="text" name = "location" value = "{{item.geolocation}} required"/>
     </p>
     <input type="hidden" name="item_id" value="{{item.item_id}}">
     <input type = "submit" value ="Upload item"/>
