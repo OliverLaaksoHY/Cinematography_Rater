@@ -18,6 +18,29 @@
     </p>
     
     <p>
+      Framing: </br>
+      <select name = "framing">
+        <option value = "close-up"> close-up </option>
+        <option value = "medium-shot"> medium shot </option>
+        <option value = "wide-shot"> wide shot</option>
+        <option value = "birds-eye"> birds-eye</option>
+        <option value = "ants-eye"> ants-eye</option>
+      </select>
+    </p>
+    
+    <p>
+      Composition: </br>
+      <select name = "composition">
+        <option value = "landscape"> landscape </option>
+        <option value = "portrait"> portrait </option>
+        <option value = "group shot"> group-shot</option>
+        <option value = "nature"> nature </option>
+        <option value = "architecture"> architecture</option>
+      
+      </select>
+    </p>
+
+    <p>
       Lens focal length<br/>
       <input type="number" name = "focal_length" pattern="[1-9][0-9]{0,3} required"/>
     </p>
@@ -25,6 +48,7 @@
       Location <br/>
       <input type="text" name = "location" required/>
     </p>
+    <input type = hidden name = "csrf_token" value = {{session.csrf_token}}>
     <input type = "submit" value ="Upload item"/>
 
   </form>
