@@ -89,33 +89,33 @@ def update_item():
     item_id = request.form["item_id"]
     try_fetch_item_with_rights(item_id)
 
-    print("ma4")
     title = request.form["title"]
     if len(title) > 50 or not title:
         abort(403)
-    
-    print("ma4")
     description = request.form["description"]
     if len(description) > 500 or not description:
         abort(403)
-
-    print("ma3")
     focal_length = request.form["focal_length"]
     if not re.search("^[1-9][0-9]{0,3}$", focal_length):
         abort(403)
-    
-    print("ma2")
     location = request.form["location"]
     if not location:
         abort(403)
+
     user_id = session["user_id"]
 
-    print("ma1")
+    all_classes = items.get_all_classes()
     classes = []
     for entry in request.form.getlist("classes"):
         if entry:
-            parts = entry.split(":")
-            classes.append((parts[0], parts[1]))
+            class_title, class_value = entry.split(":")
+            if class_title not in all_classes:
+                abort(403)
+            if class_value not in all_classes[class_title]:
+                abort(403)
+                
+            classes.append((class_title, class_value))
+
 
     try:
         items.update_item(item_id, title, description, focal_length, location, user_id, classes)
@@ -171,12 +171,21 @@ def create_item():
     classes = []
     user_id = session["user_id"]
     
+    all_classes = items.get_all_classes()
+
     
     classes = []
     for entry in request.form.getlist("classes"):
         if entry:
-            parts = entry.split(":")
-            classes.append((parts[0], parts[1]))
+            class_title, class_value = entry.split(":")
+            if class_title not in all_classes:
+                abort(403)
+            if class_value not in all_classes[class_title]:
+                abort(403)
+    
+            classes.append((class_title, class_value))
+
+
     
     try:
         items.add_item(title, description, focal_length, location, user_id, classes)
