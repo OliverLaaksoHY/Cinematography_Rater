@@ -17,6 +17,11 @@
   <p>
     Focal Length: {{item.focal_length}}
   </p>
+
+  <p>
+    Ilmoittaja <a href="/user/{{item.user_id}}" >{{item.username}} </a>
+  </p>
+
   {% if session.user_id == item.user_id %}
   <p>
     <a href = "/edit_item/{{item.item_id}}" >Edit</a>

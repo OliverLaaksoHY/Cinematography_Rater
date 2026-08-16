@@ -4,6 +4,7 @@ from flask import abort, redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import db
 import items
+import users
 import secrets
 import re
 app = Flask(__name__)
@@ -19,15 +20,28 @@ def try_fetch_item(item_id: int):
 def try_fetch_item_with_rights(item_id: int):
     item = items.get_item(item_id)
     if not item:
+        print("Aborting here")
         abort(404)
     
     if not session.get("user_id") or item["user_id"] != session["user_id"]:
+        print("Aborting here2")
         abort(403)
     return item
 
 def require_login():
     if not session.get("user_id"):
+        print("aborting fro require_login")
         abort(403)
+
+
+@app.route("/user/<int:user_id>")
+def show_user(user_id):
+    user = users.get_user(user_id)
+    if not user:
+        abort(403)
+    items = users.get_user_posts(user_id)
+    print(items[0])
+    return render_template("show_user.html", user=user, items=items)
 
 
 @app.route("/")
