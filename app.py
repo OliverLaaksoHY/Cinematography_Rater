@@ -7,21 +7,6 @@ import items
 import secrets
 app = Flask(__name__)
 app.secret_key = str(secrets.token_hex(16))
-@app.route("/")
-def index():
-    all_items = items.get_items()
-    return render_template("index.html", message="Tervetuloa!", items=all_items)
-
-@app.route("/find_item")
-def find_item():
-    query = request.args.get("query")
-    if query:
-        results = items.search_item(query)
-    else:
-        query = ""
-        results = []
-    
-    return render_template("find_item.html", query=query, results=results)
 
 
 def try_fetch_item(item_id: int):
@@ -39,6 +24,28 @@ def try_fetch_item_with_rights(item_id: int):
         abort(403)
     return item
 
+def require_login():
+    if not session.get("user_id"):
+        abort(403)
+
+
+@app.route("/")
+def index():
+    all_items = items.get_items()
+    return render_template("index.html", message="Tervetuloa!", items=all_items)
+
+@app.route("/find_item")
+def find_item():
+    query = request.args.get("query")
+    if query:
+        results = items.search_item(query)
+    else:
+        query = ""
+        results = []
+    
+    return render_template("find_item.html", query=query, results=results)
+
+
 
 @app.route("/item/<int:item_id>")
 def show_item(item_id):
@@ -47,6 +54,7 @@ def show_item(item_id):
 
 @app.route("/edit_item/<int:item_id>")
 def edit_item(item_id):
+    require_login()
     item = try_fetch_item_with_rights(item_id)
     return render_template("edit_item.html", item=item)
 
@@ -86,10 +94,12 @@ def register():
 
 @app.route("/add_cinema")
 def add_item():
+    require_login()
     return render_template("add_cinema.html")
 
 @app.route("/create_item", methods=["POST"])
 def create_item():
+    require_login()
     title = request.form["title"]
     description = request.form["description"]
     focal_length = request.form["focal_length"]
