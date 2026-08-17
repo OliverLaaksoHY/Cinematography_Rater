@@ -15,7 +15,7 @@
   </p>
   
   <p>
-    Focal Length: {{item.focal_length}}
+    Focal Length: {{item.focal_length}} mm
   </p>
 
   <p>
@@ -42,6 +42,33 @@
 
   {% endif %}
 
+  <h2>Reviews</h2>
+  <ul>
+    {% for review in reviews %}
+    <li> 
+      {{review.score}}/5 from <a href="/users/{{review.user_id}}">{{review.username}} </a> 
+    <p>
+      {{review.rationale}}
+    </p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% if session.user_id %}
+  <h2> New Review</h2>
+  <form action ="/create_review" method="post">
+    <p>
+      Score: </br>
+      <input type ="number" name = "score" size = "1" pattern="[1-5]" required>
+    </p>
+    <p>
+      Review: </br>
+      <textarea name = "rationale" rows = "8" cols =60 maxlength="300" required></textarea>
+    </p>
+    <input type = hidden name = "csrf_token" value = {{session.csrf_token}}>
+    <input type = hidden name = "item_id" value = {{item.item_id}}>
+    <input type = "submit" value ="review"/>
+  </form>
+  {% endif %}
   <p>
     <a href="/"> Back </a>
   </p>

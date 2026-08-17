@@ -75,3 +75,16 @@ def get_all_classes():
     for title, value in result:
         classes[title].append(value)
     return classes
+
+def add_review(item_id, user_id, score, rationale):
+    sql = """INSERT INTO reviews (item_id, user_id, overall_score, rationale)
+    VALUES (?, ?, ?, ?)"""
+    db.execute(sql, [item_id, user_id, score, rationale])
+def get_reviews(item_id):
+    sql = """
+            SELECT reviews.overall_score score, users.id user_id, users.username, reviews.rationale
+            FROM reviews, users
+            WHERE reviews.item_id = ? AND reviews.user_id = users.id
+            ORDER BY reviews.id DESC  
+        """
+    return db.query(sql, [item_id])

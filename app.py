@@ -68,7 +68,9 @@ def find_item():
 def show_item(item_id):
     item = try_fetch_item(item_id)
     classes = items.get_classes(item_id)
-    return render_template("show_item.html", item=item, classes = classes)
+    reviews = items.get_reviews(item_id)
+    print(reviews)
+    return render_template("show_item.html", item=item, classes=classes, reviews=reviews)
 
 @app.route("/edit_item/<int:item_id>")
 def edit_item(item_id):
@@ -147,6 +149,25 @@ def add_item():
     require_login()
     classes = items.get_all_classes()
     return render_template("add_cinema.html", classes = classes)
+
+
+
+@app.route("/create_review", methods=["POST"])
+def create_review():
+    check_csrf()
+    require_login()
+    score = request.form["score"]
+    if not re.search("^[1-5]$", score):
+        print("Wrong score")
+        abort(403)
+    rationale = request.form["rationale"]
+    if not rationale or len(rationale) > 300:
+        abort(403) 
+    item_id = request.form["item_id"]
+    item = try_fetch_item(item_id)
+
+    items.add_review(item_id, session["user_id"], score, rationale)
+    return redirect("/item/"+str(item_id))
 
 @app.route("/create_item", methods=["POST"])
 def create_item():
