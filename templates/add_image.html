@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Upload Cinema</title>
+</head>
+
+<body>
+  <h1>Upload Cinema</h1>
+  <form action="/create_image" method="post">
+    <p>
+      Title: <br />
+      <input type="text" name = "title" maxlength="50" required/>
+    </p>
+    <p>
+      Description <br/>
+      <textarea name = "description" rows = "8" cols =60 maxlength="500" required></textarea>
+    </p>
+    
+    {% for class in classes %}
+    <p>
+      {{class}}: </br>
+      <select name ="classes">
+        <option value="">(select)</option>
+      {% for option in classes[class] %}
+        <option value="{{class}}:{{option}}">{{option}} </option>        
+      {% endfor %}
+      </select>
+    </p>
+    {% endfor %}
+
+
+    <p>
+      Lens focal length<br/>
+      <input type="number" name = "focal_length" pattern="[1-9][0-9]{0,3} required"/>
+    </p>
+    <p>
+      Location <br/>
+      <input type="text" name = "location" required/>
+    </p>
+    <input type = hidden name = "csrf_token" value = {{session.csrf_token}}>
+    <input type = "submit" value ="Upload post"/>
+
+  </form>
+</body>
+
+
+</html>
+

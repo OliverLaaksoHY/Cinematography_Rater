@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Find Post</title>
+</head>
+
+<body>
+  <h1>Find Post</h1>
+  <form action="/find_image" method="get">
+    <p>
+      Search word: <input type="text" name = "query" value = "{{query}}"/>
+    </p>
+    <br>
+    <input type = "submit" value ="Send"/>
+    {% if query %}
+    <h2> Tulokset </h2>
+    <ul>
+      {% for image in results%}
+      <li><a href= "/image/{{image.id}}"> {{image.title}}</a> </li>
+      {% endfor %}
+    </ul>
+
+    {% endif %}
+    <p> 
+      <a href = "/"> Back </a>
+    </p>
+  </form>
+</body>
+
+
+</html>

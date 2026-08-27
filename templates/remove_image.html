@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Delete {{image.title}}</title>
+</head>
+
+<body>
+  <h1> Delete {{image.title}} by {{image.username}}</h1>
+  <h3> Do you wish to delete this post? </h3>
+  <form action ="/remove_image/{{image.image_id}}" method="post">
+    <input type = hidden name = "csrf_token" value = {{session.csrf_token}}>
+    <input type = "submit" name = "remove" value="Delete post"> 
+    <input type = "submit" name = "back" value="Return Back"> 
+  </form>
+  <p>
+    <a href="/"> Back </a>
+  </p>
+
+</body>
+
+</html>
