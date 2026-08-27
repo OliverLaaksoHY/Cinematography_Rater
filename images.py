@@ -1,12 +1,12 @@
 import db
-def add_image(title, description, focal_length, location, user_id, classes):
+def add_image(title, image, description, focal_length, location, user_id, classes):
     sql = """
         INSERT INTO images 
-        (title, description, focal_length, geolocation, user_id) 
+        (title, image, description, focal_length, geolocation, user_id) 
         VALUES 
-        (?, ?, ?, ?, ?)
+        (?, ?, ?, ?, ?, ?)
         """
-    db.execute(sql, [title, description, focal_length, location, user_id])
+    db.execute(sql, [title, image, description, focal_length, location, user_id])
 
     image_id = db.last_insert_id()
     sql = "INSERT INTO image_classes (image_id, title, value) VALUES (?, ?, ?)"
@@ -55,7 +55,7 @@ def search_image(query):
 
 def get_image(image_id):
     sql = """
-        SELECT I.id image_id, I.title, I.description, I.focal_length, I.geolocation, U.username, I.user_id 
+        SELECT I.id image_id, I.Image imagefile, I.title, I.description, I.focal_length, I.geolocation, U.username, I.user_id 
         FROM images I, users U 
         WHERE I.user_id = U.id
         AND I.id = ?"""

@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask
-from flask import abort, redirect, render_template, request, session
+from flask import abort, redirect, render_template, request, session, make_response
 import db
 import images
 import users
@@ -62,6 +62,17 @@ def find_image():
     
     return render_template("find_image.html", query=query, results=results)
 
+
+@app.route("/imagefile/<int:image_id>")
+def show_imagefile(image_id):
+    image = images.get_image(image_id)
+    imagefile = image["imagefile"]
+    if not imagefile:
+        abort(404)
+
+    response = make_response(bytes(imagefile))
+    response.headers.set("Content-Type", "image/jpeg")
+    return response
 
 
 @app.route("/image/<int:image_id>")
@@ -148,7 +159,7 @@ def register():
 def add_image():
     require_login()
     classes = images.get_all_classes()
-    return render_template("add_inema.html", classes = classes)
+    return render_template("add_image.html", classes = classes)
 
 
 
@@ -188,6 +199,15 @@ def create_image():
     location = request.form["location"]
     if not location:
         abort(403)
+
+    file = request.files["image"]
+    if not file.filename.lower().endswith(".jpg"):
+        return "VIRHE: Wrong file format"
+
+    image = file.read()
+    if len(image) > 10 * 1000 * 1024:
+        return "VIRHE: Image file too large "
+
     
     classes = []
     user_id = session["user_id"]
@@ -209,7 +229,7 @@ def create_image():
 
     
     try:
-        images.add_image(title, description, focal_length, location, user_id, classes)
+        images.add_image(title, image, description, focal_length, location, user_id, classes)
     except sqlite3.IntegrityError:
         return "Already exists"
 

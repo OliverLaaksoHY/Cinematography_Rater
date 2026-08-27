@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-  <title>Upload Cinema</title>
-</head>
-
-<body>
-  <h1>Upload Cinema</h1>
-  <form action="/create_image" method="post">
+  
+  <head>
+    <title>Upload Image</title>
+  </head>
+  
+  <body>
+    <h1>Upload Image</h1>
+    <form action="/create_image" method="post" enctype ="multipart/form-data">
     <p>
       Title: <br />
       <input type="text" name = "title" maxlength="50" required/>
@@ -38,6 +38,12 @@
       Location <br/>
       <input type="text" name = "location" required/>
     </p>
+    <p>
+      Image: <br/> 
+      <input type="file" name="image" accept=".jpg" required/>
+    </p>
+
+
     <input type = hidden name = "csrf_token" value = {{session.csrf_token}}>
     <input type = "submit" value ="Upload post"/>
 
