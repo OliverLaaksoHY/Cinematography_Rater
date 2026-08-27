@@ -10,7 +10,7 @@ def get_user(user_id):
 
 def get_user_posts(user_id):
     sql = """
-        SELECT id, title FROM items WHERE user_id = ?   
+        SELECT id, title FROM images WHERE user_id = ?   
         ORDER BY id DESC
     """
     return db.query(sql, [user_id])

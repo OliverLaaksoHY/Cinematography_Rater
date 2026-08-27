@@ -2,7 +2,7 @@ import sqlite3
 from flask import Flask
 from flask import abort, redirect, render_template, request, session
 import db
-import items
+import images
 import users
 import secrets
 import re
@@ -10,22 +10,22 @@ app = Flask(__name__)
 app.secret_key = str(secrets.token_hex(16))
 
 
-def try_fetch_item(item_id: int):
-    item = items.get_item(item_id)
-    if not item:
+def try_fetch_image(image_id: int):
+    image = images.get_image(image_id)
+    if not image:
         abort(404)
-    return item
+    return image
 
-def try_fetch_item_with_rights(item_id: int):
-    item = items.get_item(item_id)
-    if not item:
+def try_fetch_image_with_rights(image_id: int):
+    image = images.get_image(image_id)
+    if not image:
         print("Aborting here")
         abort(404)
     
-    if not session.get("user_id") or item["user_id"] != session["user_id"]:
+    if not session.get("user_id") or image["user_id"] != session["user_id"]:
         print("Aborting here2")
         abort(403)
-    return item
+    return image
 
 def require_login():
     if not session.get("user_id"):
@@ -41,55 +41,55 @@ def show_user(user_id):
     user = users.get_user(user_id)
     if not user:
         abort(403)
-    items = users.get_user_posts(user_id)
+    images = users.get_user_posts(user_id)
     
-    return render_template("show_user.html", user=user, items=items)
+    return render_template("show_user.html", user=user, images=images)
 
 
 @app.route("/")
 def index():
-    all_items = items.get_items()
-    return render_template("index.html", message="Tervetuloa!", items=all_items)
+    all_images = images.get_images()
+    return render_template("index.html", message="Tervetuloa!", images=all_images)
 
-@app.route("/find_item")
-def find_item():
+@app.route("/find_image")
+def find_image():
     query = request.args.get("query")
     if query:
-        results = items.search_item(query)
+        results = images.search_image(query)
     else:
         query = ""
         results = []
     
-    return render_template("find_item.html", query=query, results=results)
+    return render_template("find_image.html", query=query, results=results)
 
 
 
-@app.route("/item/<int:item_id>")
-def show_item(item_id):
-    item = try_fetch_item(item_id)
-    classes = items.get_classes(item_id)
-    reviews = items.get_reviews(item_id)
+@app.route("/image/<int:image_id>")
+def show_image(image_id):
+    image = try_fetch_image(image_id)
+    classes = images.get_classes(image_id)
+    reviews = images.get_reviews(image_id)
     print(reviews)
-    return render_template("show_item.html", item=item, classes=classes, reviews=reviews)
+    return render_template("show_image.html", image=image, classes=classes, reviews=reviews)
 
-@app.route("/edit_item/<int:item_id>")
-def edit_item(item_id):
+@app.route("/edit_image/<int:image_id>")
+def edit_image(image_id):
     require_login()
-    item = try_fetch_item_with_rights(item_id)
-    all_classes = items.get_all_classes()
+    image = try_fetch_image_with_rights(image_id)
+    all_classes = images.get_all_classes()
     classes = {}
     for entry in classes:
         classes[entry] = []
 
-    for entry in items.get_classes(item_id):
+    for entry in images.get_classes(image_id):
         classes[entry["title"]] = entry["value"] 
-    return render_template("edit_item.html", item=item, classes=classes, all_classes = all_classes)
+    return render_template("edit_image.html", image=image, classes=classes, all_classes = all_classes)
 
-@app.route("/update_item", methods=["POST"])
-def update_item():
+@app.route("/update_image", methods=["POST"])
+def update_image():
     check_csrf()
-    item_id = request.form["item_id"]
-    try_fetch_item_with_rights(item_id)
+    image_id = request.form["image_id"]
+    try_fetch_image_with_rights(image_id)
 
     title = request.form["title"]
     if len(title) > 50 or not title:
@@ -106,7 +106,7 @@ def update_item():
 
     user_id = session["user_id"]
 
-    all_classes = items.get_all_classes()
+    all_classes = images.get_all_classes()
     classes = []
     for entry in request.form.getlist("classes"):
         if entry:
@@ -120,35 +120,35 @@ def update_item():
 
 
     try:
-        items.update_item(item_id, title, description, focal_length, location, user_id, classes)
+        images.update_image(image_id, title, description, focal_length, location, user_id, classes)
     except sqlite3.IntegrityError:
         return "Already exists"
 
-    return redirect("/item/"+str(item_id))
+    return redirect("/image/"+str(image_id))
 
-@app.route("/remove_item/<int:item_id>", methods = ["GET", "POST"])
-def remove_item(item_id):
-    item = try_fetch_item_with_rights(item_id)
+@app.route("/remove_image/<int:image_id>", methods = ["GET", "POST"])
+def remove_image(image_id):
+    image = try_fetch_image_with_rights(image_id)
     
     if request.method == "GET":
-        return render_template("remove_item.html", item=item)
+        return render_template("remove_image.html", image=image)
     if request.method == "POST":
         check_csrf()
         if "remove" in request.form:
-            items.remove_item(item_id)
+            images.remove_image(image_id)
             return redirect("/")
         else:
-            return redirect("/item/"+str(item_id))
+            return redirect("/image/"+str(image_id))
 
 @app.route("/register")
 def register():
     return render_template("register.html")
 
-@app.route("/add_cinema")
-def add_item():
+@app.route("/add_image")
+def add_image():
     require_login()
-    classes = items.get_all_classes()
-    return render_template("add_cinema.html", classes = classes)
+    classes = images.get_all_classes()
+    return render_template("add_inema.html", classes = classes)
 
 
 
@@ -163,14 +163,14 @@ def create_review():
     rationale = request.form["rationale"]
     if not rationale or len(rationale) > 300:
         abort(403) 
-    item_id = request.form["item_id"]
-    item = try_fetch_item(item_id)
+    image_id = request.form["image_id"]
+    image = try_fetch_image(image_id)
 
-    items.add_review(item_id, session["user_id"], score, rationale)
-    return redirect("/item/"+str(item_id))
+    images.add_review(image_id, session["user_id"], score, rationale)
+    return redirect("/image/"+str(image_id))
 
-@app.route("/create_item", methods=["POST"])
-def create_item():
+@app.route("/create_image", methods=["POST"])
+def create_image():
     check_csrf()
     require_login()
     title = request.form["title"]
@@ -192,7 +192,7 @@ def create_item():
     classes = []
     user_id = session["user_id"]
     
-    all_classes = items.get_all_classes()
+    all_classes = images.get_all_classes()
 
     
     classes = []
@@ -209,7 +209,7 @@ def create_item():
 
     
     try:
-        items.add_item(title, description, focal_length, location, user_id, classes)
+        images.add_image(title, description, focal_length, location, user_id, classes)
     except sqlite3.IntegrityError:
         return "Already exists"
 

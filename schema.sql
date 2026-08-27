@@ -3,9 +3,10 @@ CREATE TABLE users (
     username TEXT UNIQUE,
     password_hash TEXT
 );
-CREATE TABLE items (
+CREATE TABLE images (
     id INTEGER PRIMARY KEY,
     title TEXT UNIQUE,
+    image BLOB,
     description TEXT,
     focal_length INTEGER,
     geolocation TEXT,
@@ -14,7 +15,7 @@ CREATE TABLE items (
 
 CREATE TABLE reviews (
     id INTEGER PRIMARY KEY,
-    item_id INTEGER REFERENCES items,
+    image_id INTEGER REFERENCES images,
     user_id INTEGER REFERENCES users,
     overall_score INTEGER,
     rationale TEXT
@@ -26,9 +27,9 @@ CREATE TABLE classes (
     value TEXT
 );
 
-CREATE TABLE item_classes (
+CREATE TABLE image_classes (
     id INTEGER PRIMARY KEY,
-    item_id INTEGER REFERENCES items,
+    image_id INTEGER REFERENCES images,
     title TEXT,
     value TEXT 
 );
