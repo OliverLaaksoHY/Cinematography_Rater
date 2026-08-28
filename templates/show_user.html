@@ -1,24 +1,26 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>{{user.username}}'s profile</title>
-</head>
+{% block title %}Uusi ilmoitus{% endblock %}
 
-<body>
-  <h1>{{user.username}}'s profile</h1>
-  
-  <p>
-      User {{user.username}} has made {{ images | count}} posts.
-  </p>
-  <h2>Posts</h2>
-  
+{% block content %}
+  <h2>{{user.username}}'s profile</h2>
   <ul>
-    {% for image in images %}
-    <li><a href="/image/{{image.id}}"> {{image.title}} </a> </li>
-    {% endfor %}
+    <li>{{ images | count}} posts</li>
+    <li>{{ ratio.review_count_given}} reviews made</li>
+    <li>{{ratio.review_count_received}} reviews received</li>
+    <li>Average score given: {{ratio.average_score_given}} / 5.0</li>
+    <li>Average score received: {{ratio.average_score_received}} / 5.0 </li>
   </ul>
-
+  
+  <h3>Posts</h3>
+  {% for image in images %}
+  <div class="image">
+    <a href = "/image/{{ image.id }}">{{image.title}}</a> <br/>
+    Averaged-Score: {{ image.average_score }} / 5<br/>
+    Review-Count: {{ image.review_count }}
+  </div>
+  {% endfor %}
+  
   {% if session.user_id == user.id %}
   <p>
     <a href = "/edit_profile/{{user.id}}" >Edit</a>
@@ -26,10 +28,5 @@
   </p>
   {% endif %}
 
-  <p>
-    <a href="/"> Back </a>
-  </p>
 
-</body>
-
-</html>
+{% endblock %}

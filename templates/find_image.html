@@ -1,32 +1,29 @@
-<!DOCTYPE html>
-<html>
 
-<head>
-  <title>Find Post</title>
-</head>
+{% extends "layout.html" %}
 
-<body>
-  <h1>Find Post</h1>
-  <form action="/find_image" method="get">
-    <p>
-      Search word: <input type="text" name = "query" value = "{{query}}"/>
-    </p>
-    <br>
+{% block title %}Find Post{% endblock %}
+
+{% block content %}
+
+<h1>Find Post</h1>
+
+<form action="/find_image" method="get">
+  <p>
+    <label for="query"> Keyword </label>
+    <br/>
+    <input type="text" name = "query" id="query" value = "{{query}}"/>
+  </p>
     <input type = "submit" value ="Send"/>
-    {% if query %}
-    <h2> Tulokset </h2>
-    <ul>
-      {% for image in results%}
-      <li><a href= "/image/{{image.id}}"> {{image.title}}</a> </li>
-      {% endfor %}
-    </ul>
-
-    {% endif %}
-    <p> 
-      <a href = "/"> Back </a>
-    </p>
-  </form>
-</body>
+</form>
 
 
-</html>
+{% if query %}
+<h2> Results </h2>
+<ul>
+  {% for image in results%}
+  <li><a href= "/image/{{image.id}}"> {{image.title}}</a> </li>
+  {% endfor %}
+</ul>
+
+{% endif %}
+{% endblock %}

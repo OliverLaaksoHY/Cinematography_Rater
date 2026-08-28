@@ -1,58 +1,49 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Edit Post</title>
-</head>
+{% block title %}Upload Image{% endblock %}
 
-<body>
-  <h1>Edit Post</h1>
-  <form action="/update_image" method="post">
-    <p>
-      Title: <br />
-      <input type="text" name = "title" value = "{{image.title}}" maxlength="50" required"/>
-    </p>
-    <p>
-      Description <br/>
-      <textarea name = "description" rows = "8" cols ="60" maxlength="500" required>{{image.description}}  </textarea>
-    </p>
-    
-    {% for class in all_classes %}
-    <p>
-      {{class}}: </br>
-      <select name ="classes">
-        <option value="">(select)</option>
-      {% for option in all_classes[class] %}
-        {% if classes[class] == option %}
-        <option value="{{class}}:{{option}}" selected>{{option}} </option>        
-        {% else %}
-        <option value="{{class}}:{{option}}">{{option}} </option>        
-        {% endif%}
-        {% endfor %}
-      </select>
-    </p>
-    {% endfor %}
+{% block content %}
+<h2>Edit Image</h2>
 
-
-    <p>
-      Lens focal length<br/>
-      <input type="number" name = "focal_length" value = "{{image.focal_length}}" pattern="[1-9][0-9]{0,3}" required/>
-    </p>
-    <p>
-      Location <br/>
-      <input type="text" name = "location" value = "{{image.geolocation}} required"/>
-    </p>
-    <input type="hidden" name="image_id" value="{{image.image_id}}">
-    <input type = hidden name = "csrf_token" value = {{session.csrf_token}}>
-    <input type = "submit" value ="Edit post"/>
-
-  </form>
+<img class ="image-preview"src="/imagefile/{{ image.image_id }}"  />
+<form action="/update_image" method="post">
   <p>
-    <a href="/"> Back </a>
+    <label for="title">Title:</label> <br />
+    <input type="text" name = "title" value = "{{image.title}}" maxlength="50" required/>
+  </p>
+  
+  <p>
+    <label for="description">Description:</label> <br/>
+    <textarea name = "description" rows = "8" cols =60 maxlength="500" required>{{image.description}}</textarea>
+  </p>
+  
+ <p>
+    <label for="focal_length">Lens focal length:</label> <br/>
+    <input type="number" name = "focal_length" value = "{{image.focal_length}}" pattern="[1-9][0-9]{0,3} required"/>
+  </p>
+  <p>
+    <label for="location">Location:</label> <br/>
+    <input type="text" name = "location" value="{{image.geolocation}}" required/>
   </p>
 
-</body>
-
-
-</html>
-
+  {% for class in classes %}
+  <p>
+    <label for="class{{ class }}">{{ class }}</label>: <br/>
+    <select name ="classes" id="class{{ class }}">
+      <option value="">(select)</option>
+    {% for option in classes[class] %}
+      {% if classes[class] == option %}
+      <option value="{{class}}:{{option}}" selected>{{option}} </option>        
+      {% else %}
+      <option value="{{class}}:{{option}}">{{option}} </option>        
+      {% endif%}
+    {% endfor %}
+    </select>
+  </p>
+  {% endfor %}
+  
+  <input type="hidden" name="image_id" value="{{image.image_id}}">
+  <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+  <input type="submit" value="Edit post"/>
+</form>
+{% endblock %}

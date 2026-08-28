@@ -1,43 +1,22 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Cinematography Reviewer</title>
-</head>
+{% block title %}Cinematography Reviewer{% endblock %}
 
-<body>
-  <h1>Cinematography Reviewer</h1>
-  {% if session.username %}
-  <p>
-    Hello {{ session.username }}
-  </p>
-  {% endif %}
-
-
-  <p>
-    <b>Welcome to</b> <i>cinematography reviewer</i>:
-  </p>
+{% block content %}
+<p>
+  <b>Welcome to</b> <i>cinematography reviewer</i>:
+</p>
   
-  {% if not session.username %}
-  <a href="/login"> Login </a>
-  <br>
-  <a href="/register"> Sign up </a>
-  <br>
-  {% else %}
-  <p>
-    <a href="/add_image"> Upload Image </a>
-    <br>
-    <a href="/logout"> Logout </a>
-  </p>
-  {% endif %}
-  <a href="/find_image"> Find post </a>
-  <h2>Posts:</h2>
-  <ul>
-    {% for image in images %}
-    <li> <a href = "/image/{{ image.id }}">{{image.title}}</a> </li>
-    {% endfor %}
-  </ul>
-</body>
 
+<h2>Posts</h2>
 
-</html>
+{% for image in images %}
+<div class="image">
+  <a href = "/image/{{ image.id }}">{{image.title}}</a> <br/>
+  Poster: <a href="/user/{{ image.user_id }}">{{ image.username }}</a> <br/>
+  Average-Score: {{ image.average_score }} <br/>
+  Review-Count: {{ image.review_count }}
+</div>
+{% endfor %}
+</ul>
+{% endblock %}

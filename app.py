@@ -42,14 +42,15 @@ def show_user(user_id):
     if not user:
         abort(403)
     images = users.get_user_posts(user_id)
-    
-    return render_template("show_user.html", user=user, images=images)
+    ratio = users.get_user_review_ratios(user_id)
+    print(ratio["review_count_given"])
+    return render_template("show_user.html", user=user, images=images, ratio=ratio)
 
 
 @app.route("/")
 def index():
     all_images = images.get_images()
-    return render_template("index.html", message="Tervetuloa!", images=all_images)
+    return render_template("index.html", images=all_images)
 
 @app.route("/find_image")
 def find_image():
@@ -168,7 +169,7 @@ def create_review():
     check_csrf()
     require_login()
     score = request.form["score"]
-    if not re.search("^[1-5]$", score):
+    if not re.search("^[0-5]$", score):
         print("Wrong score")
         abort(403)
     rationale = request.form["rationale"]

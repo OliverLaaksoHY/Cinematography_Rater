@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/main.css">
+</head>
+
+<body>
+  <h1>Cinematography Reviewer</h1>
+
+  {% if session.user_id %}
+  <p>
+    You're logged in as user <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
+  </p>
+  {% endif %}
+
+  <p>
+    <a href="/">Front Page</a> |
+    <a href="/find_image">Find Post</a> |
+  {% if session.user_id %}
+    <a href="/add_image">Upload Image</a> |
+    <a href="/logout">Logout</a>
+  {% else %}
+    <a href="/login">Login</a> |
+    <a href="/register">Sign Up</a>
+  {% endif %}
+  </p>
+
+  {% for message in get_flashed_messages() %}
+  <div class="info">
+    {{ message }}
+  </div>
+  {% endfor %}
+
+  {% block content %}{% endblock %}  
+</body>
+
+</html>

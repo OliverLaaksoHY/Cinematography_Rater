@@ -8,12 +8,42 @@ def get_user(user_id):
     result = db.query(sql, [user_id])
     return result[0] if result else None
 
+
+
 def get_user_posts(user_id):
     sql = """
-        SELECT id, title FROM images WHERE user_id = ?   
-        ORDER BY id DESC
+        SELECT I.id, I.title, U.id user_id, U.username, AVG(R.overall_score) average_score, COUNT(R.id) review_count
+        FROM images I 
+        JOIN Users U ON I.user_id = U.id
+        LEFT JOIN Reviews R ON R.image_id = I.id
+        WHERE I.user_id = ?
+        GROUP BY I.id
+        ORDER BY I.id DESC
     """
     return db.query(sql, [user_id])
+
+def get_user_review_ratios(user_id):
+    sql = """
+            SELECT
+             
+            (SELECT IFNULL(COUNT(*),0) FROM reviews
+             WHERE user_id=?) AS review_count_given,
+
+            (SELECT IFNULL(AVG(overall_score), 0) FROM reviews
+             WHERE user_id=?) AS average_score_given,
+            
+            (SELECT IFNULL(COUNT(R.id),0) FROM Reviews R 
+                JOIN images I ON I.id = R.image_id
+                WHERE I.user_id = ?) AS review_count_received,
+
+            (SELECT IFNULL(AVG(R.overall_score), 0) FROM Reviews R 
+                JOIN images I ON I.id = R.image_id
+                WHERE I.user_id = ?) AS average_score_received
+"""
+    return db.query(sql, [user_id, user_id, user_id, user_id])[0]
+
+
+
 
 def create_user(username, password):
     password_hash = generate_password_hash(password)

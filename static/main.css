@@ -1,0 +1,50 @@
+body {
+  margin: auto;
+  max-width: 50em;
+  font-family: sans-serif;
+  background-color: #151515;
+  color: #F5F5F5;
+}
+
+a {
+  color: #C9A46C;
+}
+
+a:hover {
+  color: #E0C18A;
+}
+
+input,
+textarea,
+select {
+  background-color: #E8E8E8;
+  color: #151515;
+  border: 1px solid #777;
+}
+
+.image {
+  border: 2px solid #C9A46C;
+  margin: 0em;
+  padding: 0.2em 0.5em;  
+}
+
+.review {
+  border: 2px solid #C9A46C;
+  margin: 0em;
+  padding: 0em 0.5em;  
+}
+
+.info {
+  border: 2px solid #C9A46C;
+  margin: 1em;
+  padding: 0.5em;
+  background-color: gray;
+  color: white;
+}
+
+.image-preview {
+  max-width: 500px;
+  max-height: 500px;
+  width: auto;
+  height: auto;
+}

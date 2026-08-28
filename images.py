@@ -34,11 +34,19 @@ def remove_image(image_id):
     sql = "DELETE FROM image_classes WHERE image_id = ?"
     db.execute(sql, [image_id])
 
+    sql = "DELETE FROM reviews WHERE image_id = ?" 
+    db.execute(sql, [image_id])
+
     sql = "DELETE FROM images WHERE id = ?"
     db.execute(sql, [image_id])
 def get_images():
     sql = """
-        SELECT id, title FROM images ORDER BY id DESC
+        SELECT I.id, I.title, U.id user_id, U.username, AVG(R.overall_score) average_score, COUNT(R.id) review_count
+        FROM images I 
+        JOIN Users U ON I.user_id = U.id
+        LEFT JOIN Reviews R ON R.image_id = I.id
+        GROUP BY I.id
+        ORDER BY I.id DESC
     """
     return db.query(sql)
 
@@ -55,10 +63,13 @@ def search_image(query):
 
 def get_image(image_id):
     sql = """
-        SELECT I.id image_id, I.Image imagefile, I.title, I.description, I.focal_length, I.geolocation, U.username, I.user_id 
-        FROM images I, users U 
-        WHERE I.user_id = U.id
-        AND I.id = ?"""
+        SELECT I.id image_id, I.Image imagefile, I.title, I.description, I.focal_length, I.geolocation, U.username, I.user_id,
+        AVG(R.overall_score) average_score,
+        COUNT(R.id) review_count
+        FROM images I
+        LEFT JOIN users U on I.user_id = U.id
+        LEFT JOIN reviews R ON I.id = R.image_id 
+        WHERE I.id = ?"""
     result = db.query(sql, [image_id])
     return result[0] if result else None
 
@@ -80,6 +91,7 @@ def add_review(image_id, user_id, score, rationale):
     sql = """INSERT INTO reviews (image_id, user_id, overall_score, rationale)
     VALUES (?, ?, ?, ?)"""
     db.execute(sql, [image_id, user_id, score, rationale])
+
 def get_reviews(image_id):
     sql = """
             SELECT reviews.overall_score score, users.id user_id, users.username, reviews.rationale
