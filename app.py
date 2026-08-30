@@ -76,7 +76,7 @@ def find_image():
 
 @app.route("/imagefile/<int:image_id>")
 def show_imagefile(image_id):
-    image = images.get_image(image_id)
+    image = try_fetch_image(image_id)
     imagefile = image["imagefile"]
     if not imagefile:
 
@@ -158,8 +158,8 @@ def update_image():
 
 @app.route("/remove_image/<int:image_id>", methods = ["GET", "POST"])
 def remove_image(image_id):
+    require_login() 
     image = try_fetch_image_with_rights(image_id)
-    
     if request.method == "GET":
         return render_template("remove_image.html", image=image)
     if request.method == "POST":
@@ -281,17 +281,17 @@ def create():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template("login.html", next_page=request.referrer)
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        
+        next_page = request.form("next_page")
         user_id = users.check_login(username, password)
         if user_id:    
             session["user_id"] = user_id
             session["username"] = username
             session["csrf_token"] = secrets.token_hex(16)
-            return redirect("/")
+            return redirect(next_page)
         else:
             flash("Wrong username or password")
             return redirect("/login")
