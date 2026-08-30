@@ -7,7 +7,7 @@ import users
 import secrets
 import re
 import markupsafe
-
+import math
 
 app = Flask(__name__)
 app.secret_key = str(secrets.token_hex(16))
@@ -56,11 +56,22 @@ def show_user(user_id):
     print(ratio["review_count_given"])
     return render_template("show_user.html", user=user, images=images, ratio=ratio)
 
-
 @app.route("/")
-def index():
-    all_images = images.get_images()
-    return render_template("index.html", images=all_images)
+@app.route("/<int:page>")
+def index(page=1):
+    page_size = 10
+    thread_count = images.get_image_count()
+    page_count = math.ceil(thread_count / page_size)
+    page_count = max(page_count, 1)
+
+    if page < 1:
+        return redirect("/1")
+    if page > page_count:
+        return redirect("/" + str(page_count))
+
+    imgs = images.get_images(page, page_size)
+    
+    return render_template("index.html", page=page, page_count=page_count, images=imgs)
 
 @app.route("/find_image")
 def find_image():

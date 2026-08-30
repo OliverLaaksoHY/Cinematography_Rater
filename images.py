@@ -39,7 +39,7 @@ def remove_image(image_id):
 
     sql = "DELETE FROM images WHERE id = ?"
     db.execute(sql, [image_id])
-def get_images():
+def get_images(page, page_size):
     sql = """
         SELECT I.id, I.title, U.id user_id, U.username, ROUND(AVG(R.overall_score),2) average_score, COUNT(R.id) review_count
         FROM images I 
@@ -47,8 +47,17 @@ def get_images():
         LEFT JOIN Reviews R ON R.image_id = I.id
         GROUP BY I.id
         ORDER BY I.id DESC
+        LIMIT ? OFFSET ?
     """
-    return db.query(sql)
+    return db.query(sql, [page_size, (page-1)*page_size])
+
+def get_image_count():
+    sql = """
+        SELECT COUNT(id)
+        FROM images
+    """
+    result = db.query(sql)
+    return result[0][0]
 
 def search_image(query):
     sql = """

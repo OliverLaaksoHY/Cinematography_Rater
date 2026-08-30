@@ -18,5 +18,11 @@
   Review-Count: {{ image.review_count }}
 </div>
 {% endfor %}
-</ul>
+<p>
+  <a href="/{{ page - 1 }}">&lt;&lt;</a>
+  Page {{ page }}/{{ page_count }}
+  <a href="/{{ page + 1 }}">&gt;&gt;</a>
+</p>
+<hr />
+
 {% endblock %}
