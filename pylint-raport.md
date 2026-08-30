@@ -69,18 +69,24 @@ users.py:54:0: C0116: Missing function or method docstring (missing-function-doc
 ## Let's go through the rapport and justify, why certain things havent been fixed in the application:
 
 ### Docstring-notices, similar to:
+
 users.py:48:0: C0116: Missing function or method docstring (missing-function-docstring)
+
 A conscious decision regarding the development of this application was made against the use of docstring-comments.
 
 ### Import-notices
 The pylint raport gives similar noices regarding the import commands:
+
 app.py:6:0: E0401: Unable to import 'flask' (import-error)
 app.py:7:0: E0401: Unable to import 'flask' (import-error)
+
 These notices do not matter, becauase the import-commands work in the application itself.
 
 ### Missing return statement:
+
 Raportissa on seuraavat ilmoitukset liittyen funktion palautusarvoon:
 app.py:176:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+
 These notices regard a situation, where a function is handling methods "GET" and "POST" but not other methods. For example the notice above is regarding this function.
 ```python
 @app.route("/remove_image/<int:image_id>", methods = ["GET", "POST"])
@@ -101,25 +107,31 @@ The decorator of the function demands that the method has to be either "GET" or 
 ### Constant name
 
 The raport has the similar notices like the following notiec regarding constant name: 
+
 seed.py:10:0: C0103: Constant name "user_count" doesn't conform to UPPER_CASE naming style (invalid-name)
+
 The developer of application is of the opinion that in the situations of these constant name notices, the lower cased versions suit the readability / aesthetics of the code better.
 
 ### Too many return statements
 The raport has the similar notices to the following notice regarding return statements:
+
 app.py:220:0: R0911: Too many return statements (9/6) (too-many-return-statements)
+
 In the opinion of the developer these cases of having multiple returns are an intentional way to keep the code clean and readable. Introducing dataclasses or nesting functions to alleviate function parameter load would not have any merit to its investment in the opinion of the developer. 
 
 ### Dangerous default value
 The raport has the following notices regarding default value:
+
 db.py:10:0: W0102: Dangerous default value [] as argument (dangerous-default-value)
 db.py:20:0: W0102: Dangerous default value [] as argument (dangerous-default-value)
 
 For example the first notice is regarding to the following function: 
+``
 def execute(sql, params=[]):
     con = get_connection()
     result = con.execute(sql, params)
     con.commit()
     g.last_insert_id = result.lastrowid
     con.close()
-
+``
 Here the parameters default value [] is an empty list. Here the problem could be, that the same default value list object is divided between all calls of the function and if one particular called list were to have its contents altered, this change would affect other calls as well. In practice in this case it doesn't matter, however, because the code does not alter these list objects.
