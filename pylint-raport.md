@@ -66,7 +66,7 @@ users.py:25:0: C0116: Missing function or method docstring (missing-function-doc
 users.py:48:0: C0116: Missing function or method docstring (missing-function-docstring)
 users.py:54:0: C0116: Missing function or method docstring (missing-function-docstring)
 ```
-## Let's go through the rapport and justify, why certain things havent been fixed in the application:
+## Let's go through the raport and justify, why certain pylint-notices have not been fixed in the application:
 
 ### Docstring-notices, similar to:
 
@@ -83,8 +83,7 @@ app.py:7:0: E0401: Unable to import 'flask' (import-error)
 These notices do not matter, becauase the import-commands work in the application itself.
 
 ### Missing return statement:
-
-Raportissa on seuraavat ilmoitukset liittyen funktion palautusarvoon:
+The raport has the similar notices to the following notice regarding missing return statement:
 app.py:176:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
 
 These notices regard a situation, where a function is handling methods "GET" and "POST" but not other methods. For example the notice above is regarding this function.
