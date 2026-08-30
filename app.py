@@ -1,13 +1,17 @@
 import sqlite3
+import re
+import secrets
+import math
+
 from flask import Flask
 from flask import abort, flash, redirect, render_template, request, session, make_response
-import db
+import markupsafe
+
+
 import images
 import users
-import secrets
-import re
-import markupsafe
-import math
+
+
 
 app = Flask(__name__)
 app.secret_key = str(secrets.token_hex(16))
@@ -30,7 +34,7 @@ def try_fetch_image_with_rights(image_id: int):
     if not image:
         print("Aborting here")
         abort(404)
-    
+
     if not session.get("user_id") or image["user_id"] != session["user_id"]:
         print("Aborting here2")
 
@@ -41,20 +45,21 @@ def require_login():
     if not session.get("user_id"):
         print("require_login")
         abort(403)
-        
+
 def check_csrf():
     token = request.form["csrf_token"]
     if not token or token != session["csrf_token"]:
         abort(403)
+
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
     user = users.get_user(user_id)
     if not user:
         abort(403)
-    images = users.get_user_posts(user_id)
+    imgs = users.get_user_posts(user_id)
     ratio = users.get_user_review_ratios(user_id)
     print(ratio["review_count_given"])
-    return render_template("show_user.html", user=user, images=images, ratio=ratio)
+    return render_template("show_user.html", user=user, images=imgs, ratio=ratio)
 
 @app.route("/")
 @app.route("/<int:page>")
@@ -70,7 +75,7 @@ def index(page=1):
         return redirect("/" + str(page_count))
 
     imgs = images.get_images(page, page_size)
-    
+
     return render_template("index.html", page=page, page_count=page_count, images=imgs)
 
 @app.route("/find_image")
@@ -81,7 +86,7 @@ def find_image():
     else:
         query = ""
         results = []
-    
+
     return render_template("find_image.html", query=query, results=results)
 
 
@@ -115,9 +120,9 @@ def edit_image(image_id):
     for entry in classes:
         classes[entry] = []
     for entry in images.get_classes(image_id):
-        classes[entry["title"]] = entry["value"] 
-        
-    return render_template("edit_image.html", image=image, classes=classes, all_classes = all_classes)
+        classes[entry["title"]] = entry["value"]
+
+    return render_template("edit_image.html", image=image, classes=classes, all_classes=all_classes)
 
 @app.route("/update_image", methods=["POST"])
 def update_image():
@@ -139,7 +144,7 @@ def update_image():
     if not re.search("^[1-9][0-9]{0,3}$", focal_length):
         flash("Error: Focal length must be between 1mm and 999 mm")
         return redirect("/update_image")
-    
+
     location = request.form["location"].strip()
     if not location:
         flash("Error: A location is required")
@@ -156,7 +161,7 @@ def update_image():
                 abort(403)
             if class_value not in all_classes[class_title]:
                 abort(403)
-                
+
             classes.append((class_title, class_value))
 
 
@@ -169,7 +174,7 @@ def update_image():
 
 @app.route("/remove_image/<int:image_id>", methods = ["GET", "POST"])
 def remove_image(image_id):
-    require_login() 
+    require_login()
     image = try_fetch_image_with_rights(image_id)
     if request.method == "GET":
         return render_template("remove_image.html", image=image)
@@ -178,8 +183,7 @@ def remove_image(image_id):
         if "remove" in request.form:
             images.remove_image(image_id)
             return redirect("/")
-        else:
-            return redirect("/image/"+str(image_id))
+        return redirect("/image/"+str(image_id))
 
 @app.route("/register")
 def register():
@@ -199,7 +203,7 @@ def create_review():
     require_login()
     score = request.form["score"]
     image_id = request.form["image_id"]
-    
+
     if not re.search("^[0-5]$", score):
         flash("Error: Score must be either 0, 1, 2, 3, 4 or 5")
         return redirect("/image/"+str(image_id))
@@ -230,18 +234,18 @@ def create_image():
     if not re.search("^[1-9][0-9]{0,3}$", focal_length):
         flash("Error: Focal length must be between 1mm and 999 mm")
         return redirect("/add_image")
-    
+
     location = request.form["location"].strip()
     if not location:
         flash("Error: A location is required")
         return redirect("/add_image")
-        
+
     file = request.files["image"]
     if not file:
         flash("Error: No image given")
         return redirect("/add_image")
-       
-    
+
+
     if not (file.filename.lower().endswith(".jpg") or file.filename.lower().endswith(".png")):
         flash("Error: Wrong file format (jpg or png)")
         return redirect("/add_image")
@@ -251,8 +255,8 @@ def create_image():
         flash("Error: Image file size too large (above 10 MB)")
         return redirect("/add_image")
     user_id = session["user_id"]
-    
-    
+
+
     all_classes = images.get_all_classes()
     classes = []
     for entry in request.form.getlist("classes"):
@@ -270,7 +274,7 @@ def create_image():
 
     return redirect("/")
 
-   
+
 @app.route("/create", methods=["POST"])
 def create():
     username = request.form["username"]
@@ -287,7 +291,7 @@ def create():
         return redirect("/register")
     flash("account successfully created")
     return redirect("/login")
-    
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -298,14 +302,14 @@ def login():
         password = request.form["password"]
         next_page = request.form("next_page")
         user_id = users.check_login(username, password)
-        if user_id:    
+        if user_id:
             session["user_id"] = user_id
             session["username"] = username
             session["csrf_token"] = secrets.token_hex(16)
             return redirect(next_page)
-        else:
-            flash("Wrong username or password")
-            return redirect("/login")
+
+        flash("Wrong username or password")
+        return redirect("/login")
 
 @app.route("/logout")
 def logout():

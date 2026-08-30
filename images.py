@@ -10,8 +10,8 @@ def add_image(title, image, description, focal_length, location, user_id, classe
 
     image_id = db.last_insert_id()
     sql = "INSERT INTO image_classes (image_id, title, value) VALUES (?, ?, ?)"
-    for title, value in classes:
-        db.execute(sql, [image_id, title, value])
+    for class_title, value in classes:
+        db.execute(sql, [image_id, class_title, value])
 
 
 def update_image(image_id, title, description, focal_length, location, user_id, classes):
@@ -26,15 +26,15 @@ def update_image(image_id, title, description, focal_length, location, user_id, 
     db.execute(sql, [image_id])
 
     sql = "INSERT INTO image_classes (image_id, title, value) VALUES (?, ?, ?)"
-    for title, value in classes:
-        db.execute(sql, [image_id, title, value])
+    for class_title, value in classes:
+        db.execute(sql, [image_id, class_title, value])
 
 
 def remove_image(image_id):
     sql = "DELETE FROM image_classes WHERE image_id = ?"
     db.execute(sql, [image_id])
 
-    sql = "DELETE FROM reviews WHERE image_id = ?" 
+    sql = "DELETE FROM reviews WHERE image_id = ?"
     db.execute(sql, [image_id])
 
     sql = "DELETE FROM images WHERE id = ?"

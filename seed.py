@@ -29,7 +29,8 @@ for i in range(1, image_count + 1):
            (title, image, description, focal_length, geolocation, user_id)
            VALUES (?, ?, ?, ?, ?, ?)""",
         [
-            "image" + str(i), image_data, "description" + str(i), random.randint(1, 999), "location" + str(i), user_id]
+            "image" + str(i), image_data, "description" + str(i), 
+            random.randint(1, 999), "location" + str(i), user_id]
     )
 
 # REVIEWS
@@ -46,4 +47,3 @@ for i in range(1, review_count + 1):
 
 db.commit()
 db.close()
-
