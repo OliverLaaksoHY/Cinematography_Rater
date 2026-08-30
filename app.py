@@ -1,13 +1,22 @@
 import sqlite3
 from flask import Flask
-from flask import abort, redirect, render_template, request, session, make_response
+from flask import abort, flash, redirect, render_template, request, session, make_response
 import db
 import images
 import users
 import secrets
 import re
+import markupsafe
+
+
 app = Flask(__name__)
 app.secret_key = str(secrets.token_hex(16))
+
+@app.template_filter()
+def show_lines(content):
+    content = str(markupsafe.escape(content))
+    content = content.replace("\n", "<br />")
+    return markupsafe.Markup(content)
 
 
 def try_fetch_image(image_id: int):
@@ -24,14 +33,15 @@ def try_fetch_image_with_rights(image_id: int):
     
     if not session.get("user_id") or image["user_id"] != session["user_id"]:
         print("Aborting here2")
+
         abort(403)
     return image
 
 def require_login():
     if not session.get("user_id"):
-        print("aborting fro require_login")
+        print("require_login")
         abort(403)
-
+        
 def check_csrf():
     token = request.form["csrf_token"]
     if not token or token != session["csrf_token"]:
@@ -69,6 +79,7 @@ def show_imagefile(image_id):
     image = images.get_image(image_id)
     imagefile = image["imagefile"]
     if not imagefile:
+
         abort(404)
 
     response = make_response(bytes(imagefile))
@@ -100,21 +111,28 @@ def edit_image(image_id):
 @app.route("/update_image", methods=["POST"])
 def update_image():
     check_csrf()
+    require_login()
     image_id = request.form["image_id"]
     try_fetch_image_with_rights(image_id)
 
-    title = request.form["title"]
+    title = request.form["title"].strip("/n")
     if len(title) > 50 or not title:
-        abort(403)
+        flash("Error: Title must be between 1 and 50 letters")
+        return redirect("/update_image")
+
     description = request.form["description"]
     if len(description) > 500 or not description:
-        abort(403)
+        flash("Error: Description must be between 1 and 500 letters")
+        return redirect("/update_image")
     focal_length = request.form["focal_length"]
     if not re.search("^[1-9][0-9]{0,3}$", focal_length):
-        abort(403)
-    location = request.form["location"]
+        flash("Error: Focal length must be between 1mm and 999 mm")
+        return redirect("/update_image")
+    
+    location = request.form["location"].strip("/n")
     if not location:
-        abort(403)
+        flash("Error: A location is required")
+        return redirect("/update_image")
 
     user_id = session["user_id"]
 
@@ -169,14 +187,16 @@ def create_review():
     check_csrf()
     require_login()
     score = request.form["score"]
-    if not re.search("^[0-5]$", score):
-        print("Wrong score")
-        abort(403)
-    rationale = request.form["rationale"]
-    if not rationale or len(rationale) > 300:
-        abort(403) 
     image_id = request.form["image_id"]
-    image = try_fetch_image(image_id)
+    
+    if not re.search("^[0-5]$", score):
+        flash("Error: Score must be either 0, 1, 2, 3, 4 or 5")
+        return redirect("/image/"+str(image_id))
+    rationale = request.form["rationale"]
+    if len(rationale) > 300:
+        flash("Error: Rationale has a max length of 300")
+        return redirect("/image/"+str(image_id))
+    try_fetch_image(image_id)
 
     images.add_review(image_id, session["user_id"], score, rationale)
     return redirect("/image/"+str(image_id))
@@ -185,37 +205,44 @@ def create_review():
 def create_image():
     check_csrf()
     require_login()
-    title = request.form["title"]
-    if not title or len(title) > 50: 
-        abort(403)
-    
-    description = request.form["description"]
-    if not description or len(description) > 500 :
-        abort(403)
 
+    title = request.form["title"].strip("/n")
+    if len(title) > 50 or not title:
+        flash("Error: Title must be between 1 and 50 letters")
+        return redirect("/add_image")
+
+    description = request.form["description"]
+    if len(description) > 500 or not description:
+        flash("Error: Description must be between 1 and 500 letters")
+        return redirect("/update_image")
     focal_length = request.form["focal_length"]
     if not re.search("^[1-9][0-9]{0,3}$", focal_length):
-        abort(403)
+        flash("Error: Focal length must be between 1mm and 999 mm")
+        return redirect("/add_image")
     
-    location = request.form["location"]
+    location = request.form["location"].strip("/n")
     if not location:
-        abort(403)
-
+        flash("Error: A location is required")
+        return redirect("/add_image")
+        
     file = request.files["image"]
-    if not file.filename.lower().endswith(".jpg"):
-        return "VIRHE: Wrong file format"
+    if not file:
+        flash("Error: No image given")
+        return redirect("/add_image")
+       
+    
+    if not (file.filename.lower().endswith(".jpg") or file.filename.lower().endswith(".png")):
+        flash("Error: Wrong file format (jpg or png)")
+        return redirect("/add_image")
 
     image = file.read()
-    if len(image) > 10 * 1000 * 1024:
-        return "VIRHE: Image file too large "
-
-    
-    classes = []
+    if len(image) > 10 * 1000 * 1000:
+        flash("Error: Image file size too large (above 10 MB)")
+        return redirect("/add_image")
     user_id = session["user_id"]
     
-    all_classes = images.get_all_classes()
-
     
+    all_classes = images.get_all_classes()
     classes = []
     for entry in request.form.getlist("classes"):
         if entry:
@@ -224,11 +251,7 @@ def create_image():
                 abort(403)
             if class_value not in all_classes[class_title]:
                 abort(403)
-    
             classes.append((class_title, class_value))
-
-
-    
     try:
         images.add_image(title, image, description, focal_length, location, user_id, classes)
     except sqlite3.IntegrityError:
@@ -243,14 +266,16 @@ def create():
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if password1 != password2:
-        return "VIRHE: salasanat eivät ole samat"
+        flash("Error: Passwords do not match")
+        return redirect("/register")
 
     try:
         users.create_user(username, password1)
     except sqlite3.IntegrityError:
-        return "VIRHE: tunnus on jo varattu"
-    
-    return "Tunnus luotu"
+        flash("Error: Username taken")
+        return redirect("/register")
+    flash("account successfully created")
+    return redirect("/login")
     
 
 @app.route("/login", methods=["GET", "POST"])
@@ -268,7 +293,8 @@ def login():
             session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
         else:
-            return "VIRHE: väärä tunnus tai salasana"
+            flash("Wrong username or password")
+            return redirect("/login")
 
 @app.route("/logout")
 def logout():

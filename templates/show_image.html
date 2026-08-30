@@ -6,7 +6,7 @@
 <h2>{{image.title}}</h2>
 <img class ="image-preview"src="/imagefile/{{ image.image_id }}"  />
 <p>
-  {{image.description }}
+  {{image.description  | show_lines}}
 </p>
 
 <ul>
@@ -47,7 +47,7 @@
   </p>
   <p>
     Review: </br>
-    <textarea name = "rationale" rows = "8" cols =60 maxlength="300" required></textarea>
+    <textarea name = "rationale" rows = "8" cols =60 maxlength="300"></textarea>
   </p>
   <input type = hidden name = "csrf_token" value = {{session.csrf_token}}>
   <input type = hidden name = "image_id" value = {{image.image_id}}>

@@ -25,7 +25,7 @@ def get_user_posts(user_id):
 def get_user_review_ratios(user_id):
     sql = """
             SELECT
-             
+
             (SELECT IFNULL(COUNT(*),0) FROM reviews
              WHERE user_id=?) AS review_count_given,
 
@@ -53,12 +53,12 @@ def create_user(username, password):
 
 def check_login(username, password):
     sql = "SELECT id, password_hash FROM users WHERE username = ?"    
-    result = db.query(sql, [username])[0]
+    result = db.query(sql, [username])
     if not result:
         return None
     
-    password_hash = result["password_hash"]
-    user_id = result["id"]
+    password_hash = result[0]["password_hash"]
+    user_id = result[0]["id"]
     
     if check_password_hash(password_hash, password):
         return user_id
