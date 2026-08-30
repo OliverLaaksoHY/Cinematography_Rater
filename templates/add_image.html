@@ -8,23 +8,23 @@
 <form action="/create_image" method="post" enctype ="multipart/form-data">
   <p>
     <label for="title">Title:</label> <br />
-    <input type="text" name = "title" maxlength="50" required/>
+    <input type="text" name = "title" id ="title" maxlength="50" required/>
   </p>
   <p>
     <label for="description">Description:</label> <br/>
-    <textarea name = "description" rows = "8" cols =60 maxlength="500" required></textarea>
+    <textarea name = "description" id="description" rows = "8" cols =60 maxlength="500" required></textarea>
   </p>
   <p>
     <label for="focal_length">Lens focal length:</label> <br/>
-    <input type="number" name = "focal_length" pattern="[1-9][0-9]{0,3} required"/>
+    <input type="number" name = "focal_length" id = "focal_length" pattern="[1-9][0-9]{0,3} required"/>
   </p>
   <p>
     <label for="location">Location:</label> <br/>
-    <input type="text" name = "location" required/>
+    <input type="text" name = "location" id="location" required/>
   </p>
   <p>
     <label for="image">Image:</label> <br/>
-    <input type="file" name="image" accept=".jpg" accept =".png" required/>
+    <input type="file" name="image" id="image"accept=".jpg" accept =".png" required/>
   </p>
 
   {% for class in classes %}

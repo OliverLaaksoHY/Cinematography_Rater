@@ -41,7 +41,7 @@ def remove_image(image_id):
     db.execute(sql, [image_id])
 def get_images():
     sql = """
-        SELECT I.id, I.title, U.id user_id, U.username, AVG(R.overall_score) average_score, COUNT(R.id) review_count
+        SELECT I.id, I.title, U.id user_id, U.username, ROUND(AVG(R.overall_score),2) average_score, COUNT(R.id) review_count
         FROM images I 
         JOIN Users U ON I.user_id = U.id
         LEFT JOIN Reviews R ON R.image_id = I.id
@@ -64,7 +64,7 @@ def search_image(query):
 def get_image(image_id):
     sql = """
         SELECT I.id image_id, I.Image imagefile, I.title, I.description, I.focal_length, I.geolocation, U.username, I.user_id,
-        AVG(R.overall_score) average_score,
+        ROUND(AVG(R.overall_score),2) average_score,
         COUNT(R.id) review_count
         FROM images I
         LEFT JOIN users U on I.user_id = U.id

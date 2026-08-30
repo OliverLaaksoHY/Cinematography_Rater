@@ -4,7 +4,13 @@
 
 {% block content %}
 <h2>{{image.title}}</h2>
-<img class ="image-preview"src="/imagefile/{{ image.image_id }}"  />
+{% if session.user_id == image.user_id%}
+<p>
+  <a href="/edit_image/{{ image.image_id }}">Edit</a>
+  <a href="/remove_image/{{ image.image_id }}">Delete</a>
+</p>
+{% endif %}
+<img class ="image-preview"src="/imagefile/{{ image.image_id }}" alt="Image in question"/>
 <p>
   {{image.description  | show_lines}}
 </p>
@@ -21,12 +27,6 @@
 {% endif %}
 </ul>
 
-{% if session.user_id == image.user_id%}
-<p>
-  <a href="/edit_image/{{ image.image_id }}">Edit</a>
-  <a href="/remove_image/{{ image.image_id }}">Delete</a>
-</p>
-{% endif %}
 
 
 
@@ -42,12 +42,12 @@
 <h2> New Review</h2>
 <form action ="/create_review" method="post">
   <p>
-    Score: </br>
-    <input type ="number" name = "score" size = "1" pattern="[0-5]" required>
+    <label for ="score">Score: </label> <br/>
+    <input type ="number" name = "score" id="score"size = "1" pattern="[0-5]" required>
   </p>
   <p>
-    Review: </br>
-    <textarea name = "rationale" rows = "8" cols =60 maxlength="300"></textarea>
+    <label for="rationale">Review</label> </br>
+    <textarea name = "rationale" id="rationale" rows = "8" cols =60 maxlength="300"></textarea>
   </p>
   <input type = hidden name = "csrf_token" value = {{session.csrf_token}}>
   <input type = hidden name = "image_id" value = {{image.image_id}}>

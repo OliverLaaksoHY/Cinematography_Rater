@@ -4,39 +4,44 @@
 
 {% block content %}
 <h2>Edit Image</h2>
+{% if session.user_id == image.user_id%}
+<p>
+  <a href="/image/{{ image.image_id }}">Back</a>
+</p>
+{% endif %}
 
-<img class ="image-preview"src="/imagefile/{{ image.image_id }}"  />
+<img class ="image-preview"src="/imagefile/{{ image.image_id }}" alt = "Image in question"  />
 <form action="/update_image" method="post">
   <p>
     <label for="title">Title:</label> <br />
-    <input type="text" name = "title" value = "{{image.title}}" maxlength="50" required/>
+    <input type="text" name = "title" id="title" value = "{{image.title}}" maxlength="50" required/>
   </p>
   
   <p>
     <label for="description">Description:</label> <br/>
-    <textarea name = "description" rows = "8" cols =60 maxlength="500" required>{{image.description}}</textarea>
+    <textarea name = "description" id="description" rows = "8" cols =60 maxlength="500" required>{{image.description}}</textarea>
   </p>
   
  <p>
     <label for="focal_length">Lens focal length:</label> <br/>
-    <input type="number" name = "focal_length" value = "{{image.focal_length}}" pattern="[1-9][0-9]{0,3} required"/>
+    <input type="number" name = "focal_length" id="focal_length" value = "{{image.focal_length}}" pattern="[1-9][0-9]{0,3} required"/>
   </p>
   <p>
     <label for="location">Location:</label> <br/>
-    <input type="text" name = "location" value="{{image.geolocation}}" required/>
+    <input type="text" name = "location" id="location" value="{{image.geolocation}}" required/>
   </p>
 
-  {% for class in classes %}
+  {% for class in all_classes %}
   <p>
-    <label for="class{{ class }}">{{ class }}</label>: <br/>
-    <select name ="classes" id="class{{ class }}">
+    <label for="class{{ class }}">{{ class }}</a>: <br />
+    <select name="classes" id="class{{ class}}">
       <option value="">(select)</option>
-    {% for option in classes[class] %}
+    {% for option in all_classes[class] %}
       {% if classes[class] == option %}
-      <option value="{{class}}:{{option}}" selected>{{option}} </option>        
+      <option value="{{ class }}:{{ option }}" selected>{{ option }}</option>
       {% else %}
-      <option value="{{class}}:{{option}}">{{option}} </option>        
-      {% endif%}
+      <option value="{{ class }}:{{ option }}">{{ option }}</option>
+      {% endif %}
     {% endfor %}
     </select>
   </p>

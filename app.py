@@ -103,9 +103,9 @@ def edit_image(image_id):
     classes = {}
     for entry in classes:
         classes[entry] = []
-
     for entry in images.get_classes(image_id):
         classes[entry["title"]] = entry["value"] 
+        
     return render_template("edit_image.html", image=image, classes=classes, all_classes = all_classes)
 
 @app.route("/update_image", methods=["POST"])
@@ -115,13 +115,13 @@ def update_image():
     image_id = request.form["image_id"]
     try_fetch_image_with_rights(image_id)
 
-    title = request.form["title"].strip("/n")
-    if len(title) > 50 or not title:
+    title = request.form["title"].strip()
+    if not title or len(title) > 50:
         flash("Error: Title must be between 1 and 50 letters")
         return redirect("/update_image")
 
     description = request.form["description"]
-    if len(description) > 500 or not description:
+    if not description or len(description) > 500:
         flash("Error: Description must be between 1 and 500 letters")
         return redirect("/update_image")
     focal_length = request.form["focal_length"]
@@ -129,7 +129,7 @@ def update_image():
         flash("Error: Focal length must be between 1mm and 999 mm")
         return redirect("/update_image")
     
-    location = request.form["location"].strip("/n")
+    location = request.form["location"].strip()
     if not location:
         flash("Error: A location is required")
         return redirect("/update_image")
@@ -206,7 +206,7 @@ def create_image():
     check_csrf()
     require_login()
 
-    title = request.form["title"].strip("/n")
+    title = request.form["title"].strip()
     if len(title) > 50 or not title:
         flash("Error: Title must be between 1 and 50 letters")
         return redirect("/add_image")
@@ -220,7 +220,7 @@ def create_image():
         flash("Error: Focal length must be between 1mm and 999 mm")
         return redirect("/add_image")
     
-    location = request.form["location"].strip("/n")
+    location = request.form["location"].strip()
     if not location:
         flash("Error: A location is required")
         return redirect("/add_image")

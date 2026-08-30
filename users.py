@@ -12,7 +12,7 @@ def get_user(user_id):
 
 def get_user_posts(user_id):
     sql = """
-        SELECT I.id, I.title, U.id user_id, U.username, AVG(R.overall_score) average_score, COUNT(R.id) review_count
+        SELECT I.id, I.title, U.id user_id, U.username, ROUND(AVG(R.overall_score),2) average_score, COUNT(R.id) review_count
         FROM images I 
         JOIN Users U ON I.user_id = U.id
         LEFT JOIN Reviews R ON R.image_id = I.id
@@ -29,14 +29,14 @@ def get_user_review_ratios(user_id):
             (SELECT IFNULL(COUNT(*),0) FROM reviews
              WHERE user_id=?) AS review_count_given,
 
-            (SELECT IFNULL(AVG(overall_score), 0) FROM reviews
+            (SELECT IFNULL(ROUND(AVG(overall_score),2), 0) FROM reviews
              WHERE user_id=?) AS average_score_given,
             
             (SELECT IFNULL(COUNT(R.id),0) FROM Reviews R 
                 JOIN images I ON I.id = R.image_id
                 WHERE I.user_id = ?) AS review_count_received,
 
-            (SELECT IFNULL(AVG(R.overall_score), 0) FROM Reviews R 
+            (SELECT IFNULL(ROUND(AVG(R.overall_score),2), 0) FROM Reviews R 
                 JOIN images I ON I.id = R.image_id
                 WHERE I.user_id = ?) AS average_score_received
 """
